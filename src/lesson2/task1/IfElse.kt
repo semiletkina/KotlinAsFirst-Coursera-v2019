@@ -3,6 +3,8 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -63,7 +65,15 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    when {
+        age % 10 == 1 && age != 11 && age != 111 -> return ("$age год")
+        age % 10 == 2 && age != 12 && age != 112 -> return ("$age года")
+        age % 10 == 3 && age != 13 && age != 113 -> return ("$age года")
+        age % 10 == 4 && age != 14 && age != 114 -> return ("$age года")
+        else -> return ("$age лет")
+    }
+}
 
 /**
  * Простая
@@ -76,7 +86,12 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = TODO()
+): Double {
+    val pp = (t1 * v1 + t2 * v2 + t3 * v3) / 2
+    if (pp <= t1 * v1) return pp / v1
+    else if (pp <= t1 * v1 + t2 * v2) return (pp - t1 * v1) / v2 + t1
+    else return (pp - t1 * v1 - t2 * v2) / v3 + t1 + t2
+}
 
 /**
  * Простая
@@ -91,7 +106,14 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int {
+    when {
+        (kingX == rookX1) || (kingX == rookX2) && (kingY == rookY1) || (kingY == rookY2) -> return 3
+        (kingX == rookX1) && (kingX != rookX2) || (kingY == rookY1) && (kingY != rookY2) -> return 1
+        (kingX == rookX2) && kingX != rookX1 || kingY == rookY2 && kingY != rookY1 -> return 2
+        else -> return 0
+    }
+}
 
 /**
  * Простая
@@ -107,7 +129,14 @@ fun rookOrBishopThreatens(
     kingX: Int, kingY: Int,
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
-): Int = TODO()
+): Int {
+    when {
+        abs(kingX - bishopX) == abs(kingY - bishopY) && (kingY == rookY) || (kingX == rookX) -> return 3
+        abs(kingX - bishopX) != abs(kingY - bishopY) && (kingY == rookY) || (kingX == rookX) -> return 1
+        abs(kingX - bishopX) == abs(kingY - bishopY) && (kingY != rookY) && (kingX != rookX) -> return 2
+        else -> return 0
+    }
+}
 
 /**
  * Простая
@@ -117,7 +146,42 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    val a1 = max(a, max(b, c))
+    if ((a1 == a) && (a >= b + c))
+        return -1
+    else if ((a1 == b) && (b >= a + c))
+        return -1
+    else if ((a1 == c) && (c >= b + a))
+        return -1
+    else if (a1 == a) {
+        val cosinus = (sqr(b) + sqr(c) - sqr(a)) / (2 * b * c)
+        when {
+            cosinus > 0.0 -> return 0
+            cosinus == 0.0 -> return 1
+            else -> return 2
+        }
+    }
+    else if (a1 == b) {
+        val cosinus = (sqr(a) + sqr(c) - sqr(b)) / (2 * a * c)
+        when {
+            cosinus > 0.0 -> return 0
+            cosinus == 0.0 -> return 1
+            else -> return 2
+        }
+    }
+    else if (a1 == c) {
+        val cosinus = (sqr(b) + sqr(a) - sqr(c)) / (2 * a * b)
+        when {
+            cosinus > 0.0 -> return 0
+            cosinus == 0.0 -> return 1
+            else -> return 2
+        }
+    }
+    return -1
+}
+
 
 /**
  * Средняя
@@ -127,4 +191,16 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    if (b < c)
+        return -1
+    else if (d < a)
+        return -1
+    else if ((a <= c) && (b <= d))
+        return (b - c)
+    else if ((a <= c) && (b >= d))
+        return (d - c)
+    else if (d <= b)
+        return (d - a)
+    else return (b - a)
+}
