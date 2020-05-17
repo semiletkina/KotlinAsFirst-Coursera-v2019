@@ -376,19 +376,15 @@ fun fibSequenceDigit(n: Int): Int {
     if (n <= 2) return 1
     while (k < n) {
         m = fib(i)
-        println("m $m")
         l = 1
         while (m / 10 != 0) {
             l++
             m = m / 10
         }
-        println("l $l")
         k += l
-        println("k $k")
         i++
     }
     m = fib(i - 1)
-    println("m $m")
     if (k == n) return m % 10
     else {
         for (j in 1..(k - n))
