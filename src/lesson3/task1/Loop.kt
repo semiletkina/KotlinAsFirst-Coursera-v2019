@@ -1,8 +1,12 @@
-@file:Suppress("UNUSED_PARAMETER")
+@file:Suppress("UNUSED_PARAMETER", "UNREACHABLE_CODE")
 
 package lesson3.task1
 
-import kotlin.math.sqrt
+import lesson2.task1.timeForHalfWay
+import java.lang.Math.pow
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.*
 
 /**
  * Пример
@@ -67,7 +71,15 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var count = 1
+    var chislo = n
+    while (chislo / 10 != 0) {
+        chislo = chislo / 10
+        count++
+    }
+    return count
+}
 
 /**
  * Простая
@@ -75,7 +87,20 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = TODO()
+fun fib(n: Int): Int {
+    if ((n == 1) || (n == 2)) return 1
+    else {
+        var fib1 = 1
+        var fib2 = 1
+        var sum = 0
+        for (i in 3..n) {
+            sum = fib1 + fib2
+            fib2 = fib1
+            fib1 = sum
+        }
+        return sum
+    }
+}
 
 /**
  * Простая
@@ -83,21 +108,40 @@ fun fib(n: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    val k = m * n
+    var i = 3
+    if (k <= 2) return k
+    if (m == n) return m
+    if (isPrime(m) && isPrime(n)) return k
+    while (i % m != 0 || i % n != 0)
+        i++
+    return i
+}
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    var minDel = 2
+    while (n % minDel != 0)
+        minDel++
+    return minDel
+}
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    var maxDel = n / 2
+    while (n % maxDel != 0)
+        maxDel--
+    return maxDel
+}
 
 /**
  * Простая
@@ -106,7 +150,15 @@ fun maxDivisor(n: Int): Int = TODO()
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun isCoPrime(m: Int, n: Int): Boolean {
+    if (m == 1 && n == 1) return true
+    if (isPrime(m) && isPrime(n)) return true
+    else {
+        for (i in 2..(max(m, n) / 2))
+            if (m % i == 0 && n % i == 0) return false
+        return true
+    }
+}
 
 /**
  * Простая
@@ -115,7 +167,13 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
-fun squareBetweenExists(m: Int, n: Int): Boolean = TODO()
+fun squareBetweenExists(m: Int, n: Int): Boolean {
+    if (m == n) return true
+    else if (sqrt(m.toDouble()).toInt() * sqrt(m.toDouble()).toInt() == m) return true
+    else if (sqrt(n.toDouble()).toInt() * sqrt(n.toDouble()).toInt() == n) return true
+    if (sqrt(m.toDouble()).toInt() == sqrt(n.toDouble()).toInt()) return false
+    else return true
+}
 
 /**
  * Средняя
@@ -133,7 +191,16 @@ fun squareBetweenExists(m: Int, n: Int): Boolean = TODO()
  * Написать функцию, которая находит, сколько шагов требуется для
  * этого для какого-либо начального X > 0.
  */
-fun collatzSteps(x: Int): Int = TODO()
+fun collatzSteps(x: Int): Int {
+    var step = 0
+    var number = x
+    while (number != 1) {
+        if (number % 2 == 0) number = number / 2
+        else number = 3 * number + 1
+        step++
+    }
+    return step
+}
 
 /**
  * Средняя
@@ -144,7 +211,23 @@ fun collatzSteps(x: Int): Int = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun sin(x: Double, eps: Double): Double {
+    var step = 1
+    var sinus = 0.0
+    var chlen: Double
+    var i: Int
+    if ((x * 180 / PI).toInt() % 180 == 0)
+        return 0.0
+    do {
+        chlen = 1.0
+        for (i in 1..step)
+            chlen *= (x / i)
+        if (step % 4 == 1) sinus += chlen
+        else if (step % 4 == 3) sinus -= chlen
+        step += 2
+    } while (abs(chlen) >= eps)
+    return sinus
+}
 
 /**
  * Средняя
@@ -155,7 +238,26 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double {
+    var step = 2
+    var chlen = 1.0
+    var cosinus = 1.0
+    if ((x * 180 / PI).toInt() % 360 == 0)
+        return 1.0
+    if ((x * 180 / PI).toInt() % 180 % 2 == 1)
+        return -1.0
+    if ((x * 180 / PI).toInt() % 90 % 2 == 1)
+        return 0.0
+    do {
+        chlen = 1.0
+        for (i in 1..step)
+            chlen *= (x / i)
+        if (step % 4 == 0) cosinus += chlen
+        else if (step % 4 == 2) cosinus -= chlen
+        step += 2
+    } while (abs(chlen) >= eps)
+    return cosinus
+}
 
 /**
  * Средняя
@@ -164,7 +266,26 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int {
+    var new: Int = 0
+    var old: Int = n
+    var k: Int = 1
+    while (old / 10 != 0) {
+        old = old / 10
+        k++
+    }
+    old = n
+    var st10new = 1
+    var st10old = 1
+    for (i in 1..k - 1) st10old *= 10
+    for (i in 1..k) {
+        new += old / st10old * st10new
+        old %= st10old
+        st10new *= 10
+        st10old /= 10
+    }
+    return new
+}
 
 /**
  * Средняя
@@ -175,7 +296,12 @@ fun revert(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean {
+    var new: Int
+    new = revert(n)
+    if (new == n) return true
+    else return false
+}
 
 /**
  * Средняя
@@ -185,7 +311,20 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean {
+    if (n / 10 == 0) return false
+    else {
+        var symbol = n % 10
+        var ost = n / 10
+        var symb = ost % 10
+        while (symb == symbol && ost / 10 != 0) {
+            ost = ost / 10
+            symb = ost % 10
+        }
+        if (symb != symbol) return true
+        else return false
+    }
+}
 
 /**
  * Сложная
@@ -196,7 +335,29 @@ fun hasDifferentDigits(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var k = 0
+    var i = 1
+    var m: Int
+    var l: Int
+    while (k < n) {
+        m = i * i
+        l = 1
+        while (m / 10 != 0) {
+            l++
+            m = m / 10
+        }
+        k += l
+        i++
+    }
+    m = (i - 1) * (i - 1)
+    if (k == n) return m % 10
+    else {
+        for (j in 1..(k - n))
+            m = m / 10
+        return m % 10
+    }
+}
 
 /**
  * Сложная
@@ -207,4 +368,31 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var k = 2
+    var i = 3
+    var m: Int
+    var l: Int
+    if (n <= 2) return 1
+    while (k < n) {
+        m = fib(i)
+        println("m $m")
+        l = 1
+        while (m / 10 != 0) {
+            l++
+            m = m / 10
+        }
+        println("l $l")
+        k += l
+        println("k $k")
+        i++
+    }
+    m = fib(i - 1)
+    println("m $m")
+    if (k == n) return m % 10
+    else {
+        for (j in 1..(k - n))
+            m /= 10
+        return m % 10
+    }
+}
