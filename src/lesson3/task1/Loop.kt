@@ -213,15 +213,20 @@ fun collatzSteps(x: Int): Int {
  */
 fun sin(x: Double, eps: Double): Double {
     var step = 1
+    var l = x
     var sinus = 0.0
     var chlen: Double
     var i: Int
     if ((x * 180 / PI).toInt() % 180 == 0)
         return 0.0
+    while (abs(l) >= (2 * PI))
+        if (l < 0)
+            l += 2 * PI
+        else l -= 2 * PI
     do {
         chlen = 1.0
         for (i in 1..step)
-            chlen *= (x / i)
+            chlen *= (l / i.toDouble())
         if (step % 4 == 1) sinus += chlen
         else if (step % 4 == 3) sinus -= chlen
         step += 2
@@ -242,16 +247,21 @@ fun cos(x: Double, eps: Double): Double {
     var step = 2
     var chlen = 1.0
     var cosinus = 1.0
+    var l = x
     if ((x * 180 / PI).toInt() % 360 == 0)
         return 1.0
     if ((x * 180 / PI).toInt() % 180 % 2 == 1)
         return -1.0
     if ((x * 180 / PI).toInt() % 90 % 2 == 1)
         return 0.0
+    while (abs(l) >= (2 * PI))
+        if (l < 0)
+            l += 2 * PI
+        else l -= 2 * PI
     do {
         chlen = 1.0
         for (i in 1..step)
-            chlen *= (x / i)
+            chlen *= (l / i.toDouble())
         if (step % 4 == 0) cosinus += chlen
         else if (step % 4 == 2) cosinus -= chlen
         step += 2
