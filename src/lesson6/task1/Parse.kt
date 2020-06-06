@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import java.lang.Exception
+import javax.sound.midi.MetaMessage
+
 /**
  * Пример
  *
@@ -69,7 +72,33 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val slovar = mutableMapOf<String, Pair<String, Int>>()
+    slovar["января"] = Pair("01", 31)
+    slovar["февраля"] = Pair("02", 28)
+    slovar["марта"] = Pair("03", 31)
+    slovar["апреля"] = Pair("04", 30)
+    slovar["мая"] = Pair("05", 31)
+    slovar["июня"] = Pair("06", 30)
+    slovar["июля"] = Pair("07", 31)
+    slovar["августа"] = Pair("08", 31)
+    slovar["сентября"] = Pair("09", 30)
+    slovar["октября"] = Pair("10", 31)
+    slovar["ноября"] = Pair("11", 30)
+    slovar["декабря"] = Pair("12", 31)
+    val date = str.split(" ")
+    if (date.size != 3) return ""
+    else {
+        if (date[1] in slovar) {
+            val day = date[0].toInt()
+            val month = slovar[date[1]]?.first?.toInt()
+            val year = date[2].toInt()
+            if (day <= slovar[date[1]]!!.second)
+                return String.format("%02d.%02d.%4d", day, month, year)
+        }
+    }
+    return ""
+}
 
 /**
  * Средняя
@@ -81,7 +110,33 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val slovar = mutableMapOf<String, Pair<String, Int>>()
+    slovar["01"] = Pair("января", 31)
+    slovar["02"] = Pair("февраля", 28)
+    slovar["03"] = Pair("марта", 31)
+    slovar["04"] = Pair("апреля", 30)
+    slovar["05"] = Pair("мая", 31)
+    slovar["06"] = Pair("июня", 30)
+    slovar["07"] = Pair("июля", 31)
+    slovar["08"] = Pair("августа", 31)
+    slovar["09"] = Pair("сентября", 30)
+    slovar["10"] = Pair("октября", 31)
+    slovar["11"] = Pair("ноября", 30)
+    slovar["12"] = Pair("декабря", 31)
+    val date = digital.split(".")
+    if (date.size != 3) return ""
+    else {
+        if (date[1] in slovar) {
+            val day = date[0].toInt()
+            val month = slovar[date[1]]?.first
+            val year = date[2].toInt()
+            if (day <= slovar[date[1]]!!.second)
+                return "$day $month $year"
+        }
+    }
+    return ""
+}
 
 /**
  * Средняя
@@ -97,7 +152,24 @@ fun dateDigitToStr(digital: String): String = TODO()
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val slovar = setOf<Char>('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+', '(', ')')
+    val resslov = setOf<Char>('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+')
+    var resh: String = ""
+    val number = phone.split(" ")
+    for (i in 0..number.size - 1) {
+        var len = number[i].length - 1
+        for (j in 0..len) {
+            if (number[i][j] in slovar) {
+                if (number[i][j] == '(' && number[i][j + 1] == ')') return ""
+                if (number[i][j] in resslov) {
+                    resh += number[i][j]
+                }
+            } else return ""
+        }
+    }
+    return resh
+}
 
 /**
  * Средняя
@@ -109,7 +181,30 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    val slovar = setOf<Char>('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '%')
+    val cifr = setOf<Char>('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+    val str = jumps.split(" ")
+    var max = 0
+    for (i in 0..str.size - 1) {
+        var znac = str[i]
+        var jump = ""
+        for (j in 0..znac.length - 1) {
+            if (!(znac[j] in slovar)) return -1
+            else {
+                if (znac[j] in cifr)
+                    jump += znac[j]
+            }
+        }
+        if (jump.isNotEmpty()) {
+            var res = jump.toInt()
+            if (res > max)
+                max = res
+        }
+    }
+    if (max == 0) return -1
+    else return max
+}
 
 /**
  * Сложная
@@ -122,7 +217,28 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    var res = jumps.split(" ")
+    val slovar = setOf<Char>('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '%')
+    var max = 0
+    var i = 0
+    while (i < res.size) {
+        var zn1 = ""
+        for (j in 0..res[i].length - 1) {
+            if (!(res[i][j] in slovar)) return -1
+            zn1 += res[i][j]
+        }
+        var zn2 = ""
+        for (j in 0..res[i + 1].length - 1) {
+            if (!(res[i + 1][j] in slovar)) return -1
+            zn2 += res[i + 1][j]
+        }
+        if (zn2.startsWith("+") && zn1.toInt() > max)
+            max = zn1.toInt()
+        i += 2
+    }
+    return max
+}
 
 /**
  * Сложная
@@ -133,7 +249,27 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun throwExample() {
+    throw IllegalArgumentException("")
+}
+
+fun plusMinus(expression: String): Int {
+    val exp = expression.split(" ")
+    if (exp[0].startsWith('+') || exp[0].startsWith('-')) throwExample()
+    var result = exp[0].toInt()
+    var i = 1
+    while (i < exp.size) {
+        val zn = exp[i]
+        if (exp[i + 1].startsWith('+') || exp[i + 1].startsWith('-')) throwExample()
+        val ch = exp[i + 1].toInt()
+        if (zn.startsWith('-'))
+            result -= ch
+        if (zn.startsWith('+'))
+            result += ch
+        i += 2
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -144,7 +280,23 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val stroka = str.toUpperCase().split(" ")
+    var ind = 0
+    for (i in 0..stroka.size - 2) {
+        if (stroka[i].length == stroka[i + 1].length) {
+            var j = 0
+            while (stroka[i][j] == stroka[i + 1][j] && j < stroka[i].length) {
+                j++
+                if (j == stroka[i].length)
+                    return ind
+            }
+            ind += stroka[i].length + 1
+        } else
+            ind += stroka[i].length + 1
+    }
+    return -1
+}
 
 /**
  * Сложная
@@ -157,7 +309,26 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    if (description.isEmpty()) return ""
+    else {
+        val sp = description.split(";")
+        val spisok = mutableMapOf<String, Double>()
+        var maxprice = 0.0
+        var maxname = ""
+        for (i in 0..sp.size - 1) {
+            var dl = sp[i].removePrefix(" ").split(" ")
+            spisok[dl[0]] = dl[1].toDouble()
+        }
+        for ((key, value) in spisok) {
+            if (maxprice < value) {
+                maxprice = value
+                maxname = key
+            }
+        }
+        return maxname
+    }
+}
 
 /**
  * Сложная
@@ -170,7 +341,56 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    val slovar = mutableMapOf<String, Int>(
+        "I" to 1,
+        "IV" to 4,
+        "V" to 5,
+        "IX" to 9,
+        "X" to 10,
+        "XL" to 40,
+        "L" to 50,
+        "XC" to 90,
+        "C" to 100,
+        "CD" to 400,
+        "D" to 500,
+        "CM" to 900,
+        "M" to 1000
+    )
+    var rc = roman
+    println(rc)
+    var result = 0
+    while (rc.isNotEmpty()) {
+        if ((rc.startsWith('I')) || (rc.startsWith('X')) || (rc.startsWith('C'))) {
+            if (rc.length > 1) {
+                var two = rc[0].toString()
+                two += rc[1].toString()
+                println(two)
+                if (two in slovar) {
+                    result += slovar[two]!!
+                    rc = rc.substring(2)
+                } else {
+                    result += slovar[rc[0].toString()]!!
+                    println(result)
+                    rc = rc.substring(1)
+                    println(rc)
+                }
+            } else {
+                result += slovar[rc[0].toString()]!!
+                println(result)
+                rc = rc.substring(1)
+                println(rc)
+            }
+        } else
+            if (rc[0].toString() in slovar) {
+                result += slovar[rc[0].toString()]!!
+                println(result)
+                rc = rc.substring(1)
+                println(rc)
+            } else return -1
+    }
+    return result
+}
 
 /**
  * Очень сложная
@@ -208,4 +428,108 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun throwExcep() {
+    throw IllegalStateException("")
+}
+
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    var result = mutableListOf<Int>()
+    var k = 0
+    while (k < cells) {
+        result.add(0)
+        k++
+    }
+    val slovar = listOf<Char>('>', '<', '+', '-', '[', ']', ' ')
+    var first = 0
+    var second = 0
+    val posotkr = mutableListOf<Int>()
+    val poszakr = mutableListOf<Int>()
+    for (i in 0..commands.length - 1) {
+        if (!(commands[i] in slovar))
+            throwExample()
+        if (commands[i] == '[') {
+            posotkr.add(i)
+            first++
+        }
+        if (commands[i] == ']') {
+            poszakr.add(i)
+            second++
+        }
+    }
+    if (first != second)
+        throwExample()
+    val oz = mutableMapOf<Int, Int>()
+    val zo = mutableMapOf<Int, Int>()
+    var i = 0
+    if (first > 1) {
+        while (i < first) {
+            if (posotkr[i + 1] > poszakr[i]) {
+                oz[posotkr[i]] = poszakr[i]
+                i++
+            } else {
+                var j = i + 2
+                if (j < posotkr.size) {
+                    if (posotkr[j] < poszakr[j - 1]) {
+                        oz[posotkr[j - 1]] = poszakr[j - 2]
+                    }
+                    j++
+                }
+                if (j == first) {
+                    oz[posotkr[i]] = poszakr[j - 1]
+                    oz[posotkr[j - 1]] = poszakr[j - 2]
+                } else {
+                    oz[posotkr[i]] = poszakr[j - 1]
+                    oz[posotkr[j - 1]] = poszakr[j - 2]
+                }
+                i = j
+            }
+        }
+    }
+    if (first == 1)
+        oz[posotkr[0]] = poszakr[0]
+    if (!(oz.isEmpty()))
+        for ((key, value) in oz)
+            zo[value] = key
+    var pos = cells / 2
+    var poscom = 0
+    var kolvo = 0
+    while (pos < cells && kolvo < limit && poscom < commands.length) {
+        if (commands[poscom] == '>') {
+            pos++
+        }
+        if (commands[poscom] == '<') {
+            pos--
+        }
+        if (commands[poscom] == '+') {
+            result[pos]++
+        }
+        if (commands[poscom] == '-') {
+            result[pos]--
+        }
+        kolvo++
+        poscom++
+        if (poscom < commands.length) {
+            if (commands[poscom] == '[') {
+                if (result[pos] != 0) {
+                    kolvo++
+                    poscom++
+                } else {
+                    kolvo++
+                    poscom = oz[poscom]!! + 1
+                }
+            }
+            if (commands[poscom] == ']') {
+                if (result[pos] != 0) {
+                    kolvo++
+                    poscom = zo[poscom]!! + 1
+                } else {
+                    kolvo++
+                    poscom++
+                }
+            }
+        }
+    }
+    if (pos >= cells)
+        throwExcep()
+    return result.toList()
+}

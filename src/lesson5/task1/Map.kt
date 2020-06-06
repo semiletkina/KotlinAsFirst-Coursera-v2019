@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import java.lang.Integer.max
+
 /**
  * Пример
  *
@@ -399,7 +401,17 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    var raznica: Int
+    var i = 0
+    while (i < list.size) {
+        raznica = number - list[i]
+        if ((raznica in list) and (i != list.indexOf(raznica)))
+            return Pair(i, list.indexOf(raznica))
+        i++
+    }
+    return Pair(-1, -1)
+}
 
 /**
  * Очень сложная
@@ -422,4 +434,39 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val a = mutableMapOf<String, Pair<Int, Int>>()
+    for ((name) in treasures)
+        if (treasures[name]!!.first <= capacity)
+            a[name] = Pair(treasures[name]!!.first, treasures[name]!!.second)
+    if (a.isEmpty())
+        return emptySet()
+    else {
+        val result = mutableSetOf<String>()
+        val lom = mutableListOf<Int>()
+        val lop = mutableListOf<Int>()
+        val lot = mutableListOf<String>()
+        val prices = Array(a.size + 1) { Array(capacity + 1) { 0 } }
+        for ((key, value) in a) {
+            lop.add(value.second)
+            lom.add(value.first)
+            lot.add(key)
+        }
+        for (i in 1..a.size)
+            for (j in 0..capacity)
+                if (j >= lom[i - 1])
+                    prices[i][j] = max(prices[i - 1][j], prices[i - 1][j - lom[i - 1]] + lop[i - 1])
+                else
+                    prices[i][j] = prices[i - 1][j]
+        var temp = capacity
+        var i = a.size
+        while (i > 0) {
+            if (prices[i][temp] != prices[i - 1][temp]) {
+                result.add(lot[i - 1])
+                temp -= lom[i - 1]
+            }
+            i--
+        }
+        return result.toSet()
+}
+}
