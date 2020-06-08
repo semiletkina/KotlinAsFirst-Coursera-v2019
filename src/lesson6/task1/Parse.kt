@@ -92,9 +92,9 @@ fun dateStrToDigit(str: String): String {
         if (date[1] in slovar) {
             val day = date[0].toInt()
             val month = slovar[date[1]]?.first?.toInt()
-            val year = date[2].toInt()
+            val year = date[2]
             if (day <= slovar[date[1]]!!.second)
-                return String.format("%02d.%02d.%4d", day, month, year)
+                return (String.format("%02d.%02d", day, month) + "." + year)
         }
     }
     return ""
@@ -126,6 +126,7 @@ fun dateDigitToStr(digital: String): String {
     slovar["12"] = Pair("декабря", 31)
     val date = digital.split(".")
     if (date.size != 3) return ""
+    if (date[2].length > 4) return ""
     else {
         if (date[1] in slovar) {
             val day = date[0].toInt()
@@ -254,6 +255,7 @@ fun throwExample() {
 }
 
 fun plusMinus(expression: String): Int {
+    if (expression.isEmpty()) throwExample()
     val exp = expression.split(" ")
     if (exp[0].startsWith('+') || exp[0].startsWith('-')) throwExample()
     var result = exp[0].toInt()
@@ -281,7 +283,7 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    val stroka = str.toUpperCase().split(" ")
+    val stroka = str.toLowerCase().split(" ")
     var ind = 0
     for (i in 0..stroka.size - 2) {
         if (stroka[i].length == stroka[i + 1].length) {
@@ -490,25 +492,29 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (!(oz.isEmpty()))
         for ((key, value) in oz)
             zo[value] = key
+    println(oz)
+    println(zo)
     var pos = cells / 2
     var poscom = 0
     var kolvo = 0
     while (pos < cells && kolvo < limit && poscom < commands.length) {
         if (commands[poscom] == '>') {
             pos++
-        }
-        if (commands[poscom] == '<') {
+            kolvo++
+            poscom++
+        } else if (commands[poscom] == '<') {
             pos--
-        }
-        if (commands[poscom] == '+') {
+            kolvo++
+            poscom++
+        } else if (commands[poscom] == '+') {
             result[pos]++
-        }
-        if (commands[poscom] == '-') {
+            kolvo++
+            poscom++
+        } else if (commands[poscom] == '-') {
             result[pos]--
-        }
-        kolvo++
-        poscom++
-        if (poscom < commands.length) {
+            kolvo++
+            poscom++
+        } else if (poscom < commands.length) {
             if (commands[poscom] == '[') {
                 if (result[pos] != 0) {
                     kolvo++
@@ -517,8 +523,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                     kolvo++
                     poscom = oz[poscom]!! + 1
                 }
-            }
-            if (commands[poscom] == ']') {
+            } else if (commands[poscom] == ']') {
                 if (result[pos] != 0) {
                     kolvo++
                     poscom = zo[poscom]!! + 1
