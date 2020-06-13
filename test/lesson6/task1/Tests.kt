@@ -42,6 +42,7 @@ class Tests {
         assertEquals("", dateStrToDigit("32 сентября 2011"))
         assertEquals("", dateStrToDigit("29 февраля 1993"))
         assertEquals("01.01.1", dateStrToDigit("01 января 1"))
+        assertEquals("29.02.4", dateStrToDigit("29 февраля 4"))
     }
 
     @Test
@@ -54,7 +55,8 @@ class Tests {
         assertEquals("", dateDigitToStr("ab.cd.ef"))
         assertEquals("", dateDigitToStr("32.09.2011"))
         assertEquals("", dateDigitToStr("29.02.1993"))
-        assertEquals("", dateDigitToStr("29.02.5500012"))
+        assertEquals("1 января 16384", dateDigitToStr("01.01.16384"))
+        assertEquals("29 февраля 5500012", dateDigitToStr("29.02.5500012"))
     }
 
     @Test
@@ -68,6 +70,8 @@ class Tests {
         assertEquals("+42566789", flattenPhoneNumber("+42(56 -- 67)89"))
         assertEquals("", flattenPhoneNumber("ab-123"))
         assertEquals("", flattenPhoneNumber("134_+874"))
+        assertEquals("", flattenPhoneNumber("+"))
+        assertEquals("", flattenPhoneNumber("-- -   -- -- -  ---------  ---    - -----  ----    -- -------- - -- -  -- - -( -  4- 8--  3-6-  4 7-)[-2- --- ]"))
     }
 
     @Test
@@ -95,6 +99,7 @@ class Tests {
         assertEquals(4, plusMinus("2 + 2"))
         assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(-1, plusMinus("0 - 1"))
+        assertThrows(IllegalArgumentException::class.java) { plusMinus("a") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+ 4") }
@@ -106,16 +111,19 @@ class Tests {
     @Test
     @Tag("Hard")
     fun firstDuplicateIndex() {
+        assertEquals(4, firstDuplicateIndex("a İ a a a İ a a"))
         assertEquals(-1, firstDuplicateIndex("Привет"))
         assertEquals(9, firstDuplicateIndex("Он пошёл в в школу"))
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
         assertEquals(9, firstDuplicateIndex("Мы пошли прямо Прямо располагался магазин"))
+        assertEquals(4, firstDuplicateIndex("a ῷ a a ῷ a"))
     }
 
     @Test
     @Tag("Hard")
     fun mostExpensive() {
         assertEquals("", mostExpensive(""))
+        assertEquals("a", mostExpensive("a 0"))
         assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 89.9"))
         assertEquals("Вино", mostExpensive("Вино 255.0"))
     }
@@ -129,11 +137,35 @@ class Tests {
         assertEquals(3000, fromRoman("MMM"))
         assertEquals(-1, fromRoman("Z"))
         assertEquals(49, fromRoman("XLIX"))
+        assertEquals(-1, fromRoman(""))
     }
 
     @Test
     @Tag("Impossible")
     fun computeDeviceCells() {
+        assertEquals(
+            listOf(0),
+            computeDeviceCells(1, "[[[[[[+++]+++++++++++++++++]++]+]]]", 256)
+        )
+        assertEquals(
+            listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2),
+            computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 256)
+        )
+        assertEquals(
+            listOf(0, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0),
+            computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 10000)
+        )
+        assertEquals(listOf(0, 0, 0, 0, 0, 1, 1, 1, 1, 1), computeDeviceCells(10, "+>+>+>+>+", 10000))
         assertEquals(listOf(0), computeDeviceCells(1, "[[]+]", 500))
+        assertEquals(listOf(0), computeDeviceCells(1, "[[[[]+]]]", 500))
+        assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(10, "===", 3) }
+        assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(10, "+>+>[+>", 3) }
+        assertEquals(listOf(-1, -1, -1, -1, -1, 0, 0, 0, 0, 0), computeDeviceCells(10, "<-<-<-<-<-", 10000))
+        assertThrows(IllegalStateException::class.java) { computeDeviceCells(20, ">>>>>>>>>>>>>", 12) }
+        assertEquals(listOf(1, 1, 1, 0, 0, -1, 0, 0, 0, 0), computeDeviceCells(10, "- <<<<< +[>+]", 17))
+        assertEquals(listOf(0, 0, -1, -1, -1, 0, 0, 0, 0, 0), computeDeviceCells(10, "<-<-<-<-<-", 6))
+        assertEquals(listOf(0, 0, 0, 0, 0, 1, 1, 0, 0, 0), computeDeviceCells(10, "+>+>+>+>+", 4))
+        assertThrows(IllegalStateException::class.java) { computeDeviceCells(1, "<+", 500) }
+        assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(1, "]+++++[+++", 500) }
     }
 }

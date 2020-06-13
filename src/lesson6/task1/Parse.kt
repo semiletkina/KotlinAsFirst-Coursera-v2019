@@ -2,6 +2,7 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
 import java.lang.Exception
 import javax.sound.midi.MetaMessage
 
@@ -92,8 +93,8 @@ fun dateStrToDigit(str: String): String {
         if (date[1] in slovar) {
             val day = date[0].toInt()
             val month = slovar[date[1]]?.first?.toInt()
-            val year = date[2]
-            if (day <= slovar[date[1]]!!.second)
+            val year = date[2].toInt()
+            if (day <= daysInMonth(month!!, year))
                 return (String.format("%02d.%02d", day, month) + "." + year)
         }
     }
@@ -126,13 +127,12 @@ fun dateDigitToStr(digital: String): String {
     slovar["12"] = Pair("декабря", 31)
     val date = digital.split(".")
     if (date.size != 3) return ""
-    if (date[2].length > 4) return ""
     else {
         if (date[1] in slovar) {
             val day = date[0].toInt()
             val month = slovar[date[1]]?.first
             val year = date[2].toInt()
-            if (day <= slovar[date[1]]!!.second)
+            if (day <= daysInMonth(date[1].toInt(), year))
                 return "$day $month $year"
         }
     }
@@ -162,14 +162,16 @@ fun flattenPhoneNumber(phone: String): String {
         var len = number[i].length - 1
         for (j in 0..len) {
             if (number[i][j] in slovar) {
-                if (number[i][j] == '(' && number[i][j + 1] == ')') return ""
+                if (j == len - 1)
+                    if (number[i][j] == '(' && number[i][j + 1] == ')') return ""
                 if (number[i][j] in resslov) {
                     resh += number[i][j]
                 }
             } else return ""
         }
     }
-    return resh
+    if (resh == "+") return ""
+    else return resh
 }
 
 /**
@@ -258,19 +260,22 @@ fun plusMinus(expression: String): Int {
     if (expression.isEmpty()) throwExample()
     val exp = expression.split(" ")
     if (exp[0].startsWith('+') || exp[0].startsWith('-')) throwExample()
-    var result = exp[0].toInt()
-    var i = 1
-    while (i < exp.size) {
-        val zn = exp[i]
-        if (exp[i + 1].startsWith('+') || exp[i + 1].startsWith('-')) throwExample()
-        val ch = exp[i + 1].toInt()
-        if (zn.startsWith('-'))
-            result -= ch
-        if (zn.startsWith('+'))
-            result += ch
-        i += 2
-    }
-    return result
+    if (exp[0].toIntOrNull() != null) {
+        var result = exp[0].toInt()
+        var i = 1
+        while (i < exp.size) {
+            val zn = exp[i]
+            if (exp[i + 1].startsWith('+') || exp[i + 1].startsWith('-')) throwExample()
+            val ch = exp[i + 1].toInt()
+            if (zn.startsWith('-'))
+                result -= ch
+            if (zn.startsWith('+'))
+                result += ch
+            i += 2
+        }
+        return result
+    } else throwExample()
+    return 0
 }
 
 /**
@@ -283,19 +288,23 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    val stroka = str.toLowerCase().split(" ")
+    val stroka = str.split(" ")
+    println(stroka)
     var ind = 0
     for (i in 0..stroka.size - 2) {
         if (stroka[i].length == stroka[i + 1].length) {
+            var stroka1 = stroka[i].toLowerCase()
+            var stroka2 = stroka[i + 1].toLowerCase()
             var j = 0
-            while (stroka[i][j] == stroka[i + 1][j] && j < stroka[i].length) {
+            while (stroka1[j] == stroka2[j] && j < stroka1.length) {
                 j++
-                if (j == stroka[i].length)
+                if (j == stroka1.length)
                     return ind
             }
             ind += stroka[i].length + 1
-        } else
+        } else {
             ind += stroka[i].length + 1
+        }
     }
     return -1
 }
@@ -323,7 +332,7 @@ fun mostExpensive(description: String): String {
             spisok[dl[0]] = dl[1].toDouble()
         }
         for ((key, value) in spisok) {
-            if (maxprice < value) {
+            if (maxprice <= value) {
                 maxprice = value
                 maxname = key
             }
@@ -360,38 +369,40 @@ fun fromRoman(roman: String): Int {
         "M" to 1000
     )
     var rc = roman
-    println(rc)
-    var result = 0
-    while (rc.isNotEmpty()) {
-        if ((rc.startsWith('I')) || (rc.startsWith('X')) || (rc.startsWith('C'))) {
-            if (rc.length > 1) {
-                var two = rc[0].toString()
-                two += rc[1].toString()
-                println(two)
-                if (two in slovar) {
-                    result += slovar[two]!!
-                    rc = rc.substring(2)
+    if (rc.isEmpty()) return -1
+    else {
+        var result = 0
+        while (rc.isNotEmpty()) {
+            if ((rc.startsWith('I')) || (rc.startsWith('X')) || (rc.startsWith('C'))) {
+                if (rc.length > 1) {
+                    var two = rc[0].toString()
+                    two += rc[1].toString()
+                    println(two)
+                    if (two in slovar) {
+                        result += slovar[two]!!
+                        rc = rc.substring(2)
+                    } else {
+                        result += slovar[rc[0].toString()]!!
+                        println(result)
+                        rc = rc.substring(1)
+                        println(rc)
+                    }
                 } else {
                     result += slovar[rc[0].toString()]!!
                     println(result)
                     rc = rc.substring(1)
                     println(rc)
                 }
-            } else {
-                result += slovar[rc[0].toString()]!!
-                println(result)
-                rc = rc.substring(1)
-                println(rc)
-            }
-        } else
-            if (rc[0].toString() in slovar) {
-                result += slovar[rc[0].toString()]!!
-                println(result)
-                rc = rc.substring(1)
-                println(rc)
-            } else return -1
+            } else
+                if (rc[0].toString() in slovar) {
+                    result += slovar[rc[0].toString()]!!
+                    println(result)
+                    rc = rc.substring(1)
+                    println(rc)
+                } else return -1
+        }
+        return result
     }
-    return result
 }
 
 /**
@@ -442,6 +453,13 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         k++
     }
     val slovar = listOf<Char>('>', '<', '+', '-', '[', ']', ' ')
+    var z = 0
+    for (i in 0..commands.length - 1)
+        if (commands[i] != '[')
+            if (commands[i] != ']')
+                z++
+    if (z == 0)
+        return result.toList()
     var first = 0
     var second = 0
     val posotkr = mutableListOf<Int>()
@@ -464,40 +482,49 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val zo = mutableMapOf<Int, Int>()
     var i = 0
     if (first > 1) {
-        while (i < first) {
-            if (posotkr[i + 1] > poszakr[i]) {
-                oz[posotkr[i]] = poszakr[i]
-                i++
-            } else {
-                var j = i + 2
-                if (j < posotkr.size) {
-                    if (posotkr[j] < poszakr[j - 1]) {
+        if (posotkr[first - 1] < poszakr[0]) {
+            var j = second - 1
+            for (i in 0..first - 1) {
+                oz[posotkr[i]] = poszakr[j]
+                j--
+            }
+        } else {
+            while (i < first) {
+                if ((i != first - 1) && (posotkr[i + 1] > poszakr[i])) {
+                    oz[posotkr[i]] = poszakr[i]
+                    i++
+                } else {
+                    var j = i + 2
+                    if (j < posotkr.size) {
+                        if (posotkr[j] < poszakr[j - 1]) {
+                            oz[posotkr[j - 1]] = poszakr[j - 2]
+                        }
+                        j++
+                    }
+                    if (j == first) {
+                        oz[posotkr[i]] = poszakr[j - 1]
+                        oz[posotkr[j - 1]] = poszakr[j - 2]
+                    } else {
+                        oz[posotkr[i]] = poszakr[j - 1]
                         oz[posotkr[j - 1]] = poszakr[j - 2]
                     }
-                    j++
+                    i = j
                 }
-                if (j == first) {
-                    oz[posotkr[i]] = poszakr[j - 1]
-                    oz[posotkr[j - 1]] = poszakr[j - 2]
-                } else {
-                    oz[posotkr[i]] = poszakr[j - 1]
-                    oz[posotkr[j - 1]] = poszakr[j - 2]
-                }
-                i = j
             }
         }
     }
     if (first == 1)
-        oz[posotkr[0]] = poszakr[0]
+        if (posotkr[0] < poszakr[0])
+            oz[posotkr[0]] = poszakr[0]
+        else throwExample()
     if (!(oz.isEmpty()))
         for ((key, value) in oz)
             zo[value] = key
     println(oz)
-    println(zo)
     var pos = cells / 2
     var poscom = 0
     var kolvo = 0
-    while (pos < cells && kolvo < limit && poscom < commands.length) {
+    while (pos < cells && pos >= 0 && kolvo < limit && poscom < commands.length) {
         if (commands[poscom] == '>') {
             pos++
             kolvo++
@@ -512,6 +539,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             poscom++
         } else if (commands[poscom] == '-') {
             result[pos]--
+            kolvo++
+            poscom++
+        } else if (commands[poscom] == ' ') {
             kolvo++
             poscom++
         } else if (poscom < commands.length) {
@@ -533,8 +563,11 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 }
             }
         }
+        println("$poscom poscom")
+        println("$kolvo kolvo")
+        println("$pos pos")
     }
-    if (pos >= cells)
+    if (pos >= cells || pos < 0)
         throwExcep()
     return result.toList()
 }
